@@ -1,0 +1,32 @@
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.rsuser
+
+# Build files
+**/bin/
+**/obj/
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+
+# Logs
+*.log
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+
+# Temporary files
+*.tmp
+*.cache
+
+# Database exports
+*.bacpac
+*.bak
