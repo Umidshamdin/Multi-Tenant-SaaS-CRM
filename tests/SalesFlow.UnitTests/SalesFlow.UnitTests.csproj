@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SalesFlow.Domain\SalesFlow.Domain.csproj" />
+    <ProjectReference Include="..\..\src\SalesFlow.Application\SalesFlow.Application.csproj" />
   </ItemGroup>
 
 </Project>
