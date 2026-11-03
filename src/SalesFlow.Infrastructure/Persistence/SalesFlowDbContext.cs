@@ -23,6 +23,8 @@ public sealed class SalesFlowDbContext : IdentityDbContext<SalesFlowUser>, IUnit
     public DbSet<Deal> Deals => Set<Deal>();
     public DbSet<SalesTask> SalesTasks => Set<SalesTask>();
 
+    public DbSet<SalesActivity> SalesActivities => Set<SalesActivity>();
+
     public SalesFlowDbContext(DbContextOptions<SalesFlowDbContext> options, ICurrentUser currentUser) : base(options)
     {
         _currentUser = currentUser;
@@ -39,6 +41,7 @@ public sealed class SalesFlowDbContext : IdentityDbContext<SalesFlowUser>, IUnit
         ConfigureFilter<Lead>(modelBuilder);
         ConfigureFilter<Deal>(modelBuilder);
         ConfigureFilter<SalesTask>(modelBuilder);
+        ConfigureFilter<SalesActivity>(modelBuilder);
         modelBuilder.Entity<SalesFlowUser>().Property(x => x.DisplayName).HasMaxLength(160);
     }
 

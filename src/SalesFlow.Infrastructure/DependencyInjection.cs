@@ -13,6 +13,7 @@ using SalesFlow.Application.Security;
 using SalesFlow.Infrastructure.Identity;
 using SalesFlow.Infrastructure.Persistence;
 using SalesFlow.Infrastructure.Persistence.Repositories;
+using SalesFlow.Application.Features.Activities;
 
 namespace SalesFlow.Infrastructure;
 
@@ -41,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<LeadService>();
         services.AddScoped<DealService>();
         services.AddScoped<TaskService>();
+        services.AddScoped<ActivityService>();
 
         services.AddIdentityCore<SalesFlowUser>(options =>
         {
