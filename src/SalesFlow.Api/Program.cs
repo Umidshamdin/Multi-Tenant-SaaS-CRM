@@ -22,9 +22,12 @@ builder.Services.AddOptions<JwtOptions>().Bind(builder.Configuration.GetSection(
     .Validate(options => options.ExpiryMinutes is >= 5 and <= 1440, "Jwt:ExpiryMinutes must be between 5 and 1440.")
     .ValidateOnStart();
 
+
 var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
-if (Encoding.UTF8.GetByteCount(jwt.SigningKey ?? "") < 32) throw new InvalidOperationException("Jwt:SigningKey is missing or shorter than 32 bytes. Configure User Secrets.");
-var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey));
+var jwtKey = jwt.SigningKey ?? throw new InvalidOperationException("Jwt:SigningKey is missing. Configure User Secrets.");
+if (Encoding.UTF8.GetByteCount(jwtKey) < 32) throw new InvalidOperationException("Jwt:SigningKey must be at least 32 bytes.");
+var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.MapInboundClaims = false;
