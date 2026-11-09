@@ -10,6 +10,7 @@ internal sealed class DealConfiguration : IEntityTypeConfiguration<Deal>
     {
         builder.ToTable("Deals");
         EntityConfiguration.ConfigureTenantEntity(builder);
+        builder.HasAlternateKey(x => new { x.TenantId, x.Id });
         builder.Property(x => x.Title).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Amount).HasPrecision(18, 2).IsRequired();
         builder.Property(x => x.Currency).HasMaxLength(3).IsRequired();
