@@ -12,7 +12,7 @@ using SalesFlow.Infrastructure.Persistence;
 namespace SalesFlow.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SalesFlowDbContext))]
-    [Migration("20261103064758_InitialCreate")]
+    [Migration("20261106164839_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -362,6 +362,57 @@ namespace SalesFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("Organizations", (string)null);
                 });
 
+            modelBuilder.Entity("SalesFlow.Domain.Entities.SalesActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("CreatedByMemberId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("DealId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "CreatedByMemberId");
+
+                    b.HasIndex("TenantId", "DealId");
+
+                    b.HasIndex("TenantId", "CustomerId", "OccurredAtUtc");
+
+                    b.ToTable("SalesActivities", (string)null);
+                });
+
             modelBuilder.Entity("SalesFlow.Domain.Entities.SalesTask", b =>
                 {
                     b.Property<Guid>("Id")
@@ -656,6 +707,35 @@ namespace SalesFlow.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SalesFlow.Domain.Entities.SalesActivity", b =>
+                {
+                    b.HasOne("SalesFlow.Domain.Entities.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SalesFlow.Domain.Entities.TenantMember", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId", "CreatedByMemberId")
+                        .HasPrincipalKey("TenantId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SalesFlow.Domain.Entities.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId", "CustomerId")
+                        .HasPrincipalKey("TenantId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SalesFlow.Domain.Entities.Deal", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId", "DealId")
+                        .HasPrincipalKey("TenantId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SalesFlow.Domain.Entities.SalesTask", b =>
