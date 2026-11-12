@@ -22,12 +22,10 @@ builder.Services.AddOptions<JwtOptions>().Bind(builder.Configuration.GetSection(
     .Validate(options => options.ExpiryMinutes is >= 5 and <= 1440, "Jwt:ExpiryMinutes must be between 5 and 1440.")
     .ValidateOnStart();
 
-
 var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
 var jwtKey = jwt.SigningKey ?? throw new InvalidOperationException("Jwt:SigningKey is missing. Configure User Secrets.");
 if (Encoding.UTF8.GetByteCount(jwtKey) < 32) throw new InvalidOperationException("Jwt:SigningKey must be at least 32 bytes.");
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -47,6 +45,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         NameClaimType = System.Security.Claims.ClaimTypes.NameIdentifier
     };
 });
+
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtTokenService>();
 
@@ -59,9 +58,18 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "SalesFlow Cloud API", Version = "v1", Description = "Tenant-aware SaaS CRM API" });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SalesFlow Cloud API",
+        Version = "v1",
+        Description = "Tenant-aware SaaS CRM API"
+    });
+
+    options.CustomSchemaIds(type => type.FullName?.Replace("+", ".") ?? type.Name);
+
     options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
     {
         Type = SecuritySchemeType.Http,
@@ -69,6 +77,7 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT",
         Description = "Paste the JWT token only (without the Bearer prefix)."
     });
+
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
         [new OpenApiSecuritySchemeReference("bearer", document)] = []
@@ -82,12 +91,15 @@ builder.Services.AddCors(options => options.AddPolicy("Frontend", policy =>
 }));
 
 var app = builder.Build();
+
 app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesFlow API v1"));
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("Frontend");

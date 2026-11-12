@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SalesFlow.Application.Abstractions;
+using SalesFlow.Application.Features.Activities;
 using SalesFlow.Application.Features.Customers;
 using SalesFlow.Application.Features.Deals;
 using SalesFlow.Application.Features.Leads;
 using SalesFlow.Application.Features.Members;
+using SalesFlow.Application.Features.Products;
 using SalesFlow.Application.Features.Tasks;
 using SalesFlow.Application.Features.Tenants;
 using SalesFlow.Application.Security;
 using SalesFlow.Infrastructure.Identity;
 using SalesFlow.Infrastructure.Persistence;
 using SalesFlow.Infrastructure.Persistence.Repositories;
-using SalesFlow.Application.Features.Activities;
 
 namespace SalesFlow.Infrastructure;
 
@@ -43,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<DealService>();
         services.AddScoped<TaskService>();
         services.AddScoped<ActivityService>();
+        services.AddScoped<IProductService, ProductService>();
 
         services.AddIdentityCore<SalesFlowUser>(options =>
         {
